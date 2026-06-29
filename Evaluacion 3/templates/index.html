@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="refresh" content="1">
+    <title>⚡ CORE CYBER-HUD - Ignacio Henseleit ⚡</title>
+    <style>
+        /* =======================================================
+           ANIMACIONES NATIVAS SINF JAVASCRIPT (EFECTOS FUTURISTAS)
+           ======================================================= */
+        @keyframes pulso-neon {
+            0%, 100% { box-shadow: 0 0 10px #00ff88, inset 0 0 5px #004422; border-color: #00ff88; }
+            50% { box-shadow: 0 0 25px #00ff88, inset 0 0 15px #004422; border-color: #33ffaa; }
+        }
+        @keyframes escanear-linea {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+        @keyframes alerta-glitch {
+            0%, 100% { text-shadow: 0 0 8px #ffff00; }
+            50% { text-shadow: 0 0 20px #ff0055, 0 0 30px #ff0055; color: #ffffff; }
+        }
+
+        /* CONFIGURACIÓN GLOBAL DEL ESPACIO CYBER */
+        body {
+            background-color: #040814;
+            /* Rejilla digital de fondo */
+            background-image: 
+                linear-gradient(rgba(0, 255, 136, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.02) 1px, transparent 1px);
+            background-size: 25px 25px;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* CABEZAL DE MATRIZ DE CONTROL */
+        #hud-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px dashed #00ff88;
+            padding-bottom: 15px;
+            width: 85%;
+            max-width: 900px;
+        }
+        #hud-title {
+            color: #00ff88;
+            font-size: 28px;
+            letter-spacing: 4px;
+            margin: 0;
+            text-shadow: 0 0 12px rgba(0, 255, 136, 0.6);
+        }
+        #hud-subtitle {
+            color: #00aaff;
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin: 5px 0 0 0;
+            text-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+        }
+
+        /* CONTENEDOR DE PANELES DE CONTROL */
+        #hud-main-grid {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 950px;
+        }
+
+        /* SECCIÓN IZQUIERDA: TERMINAL DE TELEMETRÍA */
+        #hud-panel-telemetria {
+            display: flex;
+            flex-direction: column;
+        }
+        #hud-tag-monitor {
+            color: #00aaff;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        #monitor-terminal {
+            background: rgba(2, 6, 16, 0.95);
+            width: 520px;
+            height: 420px;
+            padding: 20px;
+            border: 2px solid #00ff88;
+            border-radius: 4px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #33ff99;
+            /* Aplicamos la animación de pulso de neón */
+            animation: pulso-neon 4s infinite ease-in-out;
+            /* Efecto CRT de pantalla antigua */
+            background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+            background-size: 100% 4px;
+        }
+
+        /* SECCIÓN DERECHA: MATRIX DE CONMUTACIÓN DE COMANDOS */
+        #hud-panel-actuadores {
+            background: rgba(10, 20, 38, 0.7);
+            border: 2px solid #00aaff;
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.15), inset 0 0 15px rgba(0, 170, 255, 0.1);
+            border-radius: 4px;
+            padding: 25px;
+            width: 280px;
+            height: 410px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        #hud-tag-control {
+            color: #ffff00;
+            font-size: 14px;
+            text-align: center;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 1px;
+            animation: alerta-glitch 2.5s infinite;
+        }
+
+        /* DISEÑO FUTURISTA DE BOTONES (UTILIZANDO SOLO IDS) */
+        form {
+            width: 100%;
+        }
+        button {
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 15px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 2px;
+        }
+
+        #btn-verde {
+            color: #00ff88;
+            border: 2px solid #00ff88;
+            text-shadow: 0 0 5px #00ff88;
+        }
+        #btn-verde:hover {
+            background: rgba(0, 255, 136, 0.15);
+            box-shadow: 0 0 15px #00ff88;
+        }
+
+        #btn-amarillo {
+            color: #ffff00;
+            border: 2px solid #ffff00;
+            text-shadow: 0 0 5px #ffff00;
+        }
+        #btn-amarillo:hover {
+            background: rgba(255, 255, 0, 0.15);
+            box-shadow: 0 0 15px #ffff00;
+        }
+
+        #btn-rojo {
+            color: #ff3366;
+            border: 2px solid #ff3366;
+            text-shadow: 0 0 5px #ff3366;
+        }
+        #btn-rojo:hover {
+            background: rgba(255, 51, 102, 0.15);
+            box-shadow: 0 0 15px #ff3366;
+        }
+
+        #btn-apagar {
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            text-shadow: 0 0 5px #ffffff;
+        }
+        #btn-apagar:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px #ffffff;
+        }
+    </style>
+</head>
+<body id="pantalla-global">
+
+    <div id="hud-header">
+        <h1 id="hud-title">QUANTUM IoT NETWORK CONTROL</h1>
+        <h3 id="hud-subtitle">OPERADOR LOGUEADO: INFRAESTRUCTURA IGNACIO HENSELEIT</h3>
+    </div>
+
+    <div id="hud-main-grid">
+        
+        <div id="hud-panel-telemetria">
+            <span id="hud-tag-monitor">// SECRECIÓN_DATOS_SUPABASE_STREAM</span>
+            <div id="monitor-terminal">{% for msg in mensajes %}{{ msg }}
+{% endfor %}</div>
+        </div>
+
+        <div id="hud-panel-actuadores">
+            <h3 id="hud-tag-control">[ CONMUTADOR DE MATRIZ DE ESTADOS ]</h3>
+            
+            <form id="form-verde" action="/enviar_comando" method="POST">
+                <input type="hidden" name="comando" value="VERDE_ON">
+                <button type="submit" id="btn-verde">> ENERGIZAR VERDE (NORMAL)</button>
+            </form>
+
+            <form id="form-amarillo" action="/enviar_comando" method="POST">
+                <input type="hidden" name="comando" value="AMARILLO_ON">
+                <button type="submit" id="btn-amarillo">> ADVERTENCIA AMARILLO</button>
+            </form>
+
+            <form id="form-rojo" action="/enviar_comando" method="POST">
+                <input type="hidden" name="comando" value="ROJO_ON">
+                <button type="submit" id="btn-rojo">> ALERTA CRÍTICA (ROJO)</button>
+            </form>
+
+            <form id="form-apagar" action="/enviar_comando" method="POST">
+                <input type="hidden" name="comando" value="APAGAR_TODO">
+                <button type="submit" id="btn-apagar">> APAGAR ESPECTRO DE LEDS</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
